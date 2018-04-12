@@ -1,0 +1,64 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+
+public class ExpressionFinder {
+	
+	Scanner s = new Scanner(System.in);
+	
+	public ArrayList<ArrayList<Integer>> getExpressions(int sum, int[] operands){
+		
+		ArrayList<ArrayList<Integer>> expressions = new ArrayList<ArrayList<Integer>>();
+		ArrayList<Integer> sourceExpression = new ArrayList<Integer>();
+		sourceExpression.add(operands[0]);
+		findExpressions(expressions, sourceExpression, sum - operands[0], operands, 1);
+		return expressions;
+	}
+	
+	public static String getReadableExpression(List<Integer> operands){
+		List<String> exp = new ArrayList<String>(operands.size());
+		
+		for(Integer op : operands)
+			exp.add(String.valueOf(op));
+		
+		return String.join(" + ", exp);
+	}
+	
+	private void findExpressions(ArrayList<ArrayList<Integer>> expressions, ArrayList<Integer> currentExpression, int sum, int[] operands, int current){
+		
+		if(current == operands.length){
+			if(sum == 0)
+				expressions.add(new ArrayList<>(currentExpression));
+			return;
+		}
+		
+		currentExpression.add(operands[current]);
+		findExpressions( expressions, currentExpression, sum - currentExpression.get(currentExpression.size() - 1), operands, current + 1);
+		currentExpression.remove(currentExpression.size() - 1);		
+		
+		currentExpression.add(-operands[current]);
+		findExpressions( expressions, currentExpression, sum - currentExpression.get(currentExpression.size() - 1), operands, current + 1);
+		currentExpression.remove(currentExpression.size() - 1);	
+		
+		
+		System.out.println(currentExpression);
+		int last = currentExpression.get(currentExpression.size() - 1);
+		currentExpression.set(currentExpression.size() - 1, last * 10 + operands[current]);
+		findExpressions( expressions, currentExpression, sum + last - ((last * 10 + operands[current])), operands, current + 1);
+	}
+	
+	
+	
+	public static void main(String[] args){
+
+		ExpressionFinder expFinder = new ExpressionFinder();
+		ArrayList<ArrayList<Integer>> expressions = expFinder.getExpressions(47, new int[] {1,2,3,4});
+		
+		System.out.println("fd");
+		
+		for(ArrayList<Integer> expression : expressions)
+				System.out.println(ExpressionFinder.getReadableExpression(expression));	
+	}
+	
+}
